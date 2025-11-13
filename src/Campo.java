@@ -30,10 +30,12 @@ public class Campo extends JPanel {
                 content.add(campo[r][c]);
                 campo[r][c].setLocation(campo[r][c].getWidth() * c, campo[r][c].getHeight() * r); 
 
+                // deriviamo una classe anonima
                 campo[r][c].addMouseListener(new MouseAdapter() {
                     
-                    // usiamo una classe anonima perché dobbiamo implementare diversi metodi astratti
-                    // NON è possibile usare una lambda function!!
+                    // MouseListener interfaccia -> MouseAdapter classe astratta
+                    // usiamo una classe astratta perché dobbiamo implementare troppi metodi astratti
+                    // NON è possibile usare una lambda function! non saprebbe quale metodo stiamo richiamando
 
                     @Override
                     public void mouseReleased(MouseEvent e) {
@@ -52,6 +54,7 @@ public class Campo extends JPanel {
                             case MouseEvent.BUTTON3:
                                 if (cliccata.isScoperta()) break;    
 
+                                // se ho esaurito le bandierine
                                 if (!cliccata.isBandiera() && nBandiere == mine) {
                                     JOptionPane.showMessageDialog(null, "Hai usato tutte le bandiere!");
                                     break;
@@ -73,12 +76,12 @@ public class Campo extends JPanel {
         // generare la posizione delle mine
         generaMine();
 
-        // imposta gli indizi
+        // impostare gli indizi
         contaIndizi();
     }
 
     /**
-     * Posizionare le mine casualmente nelle celle
+     * Posiziona le mine casualmente nelle celle
      */
     private void generaMine() {
 
@@ -86,7 +89,7 @@ public class Campo extends JPanel {
     }
 
     /**
-     * Analizzare le celle adiacenti contando le mine, e imposta gli indizi numerici
+     * Analizza le celle adiacenti contando le mine, e imposta gli indizi numerici
      */
     private void contaIndizi() {
 
