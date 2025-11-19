@@ -86,6 +86,19 @@ public class Campo extends JPanel {
     private void generaMine() {
 
         Random rand = new Random();
+
+        int mineInserite = 0;
+        while (mineInserite < mine) {
+
+            // randomizzo coordinate della cella
+            int r = rand.nextInt(campo.length);
+            int c = rand.nextInt(campo[0].length); 
+
+            if (campo[r][c].getContenuto() != MINA) {
+                campo[r][c].setContenuto(MINA);
+                mineInserite++;
+            }
+        }
     }
 
     /**
@@ -93,6 +106,31 @@ public class Campo extends JPanel {
      */
     private void contaIndizi() {
 
+        int mineContate;
+
+        for (int r=0; r < campo.length; r++)
+            for (int c = 0; c < campo[0].length; c++) {
+                
+                mineContate = 0;
+
+                // se è una mina, la salto
+                if (campo[r][c].getContenuto() == MINA) continue;
+
+                // scorro le adiacenze 3x3
+                for (int riga = r-1; riga <= r+1; riga++) {
+                    for (int col = c-1; col <= c+1; col++) {
+                        
+                        // controllare la validità delle celle adiacenti
+                        try {
+                            if (campo[riga][col].getContenuto() == MINA)
+                                mineContate++;
+                        }
+                        catch (ArrayIndexOutOfBoundsException e) {/* salto la cella */}
+                    } 
+                }
+
+                campo[r][c].setContenuto(mineContate);
+            }
     }
 
     /**
@@ -102,6 +140,14 @@ public class Campo extends JPanel {
      */
     public void scopriCella(int r, int c) {
 
-        // va fatta ricorsiva!!!
+        if (campo[r][c].isBandiera()) return;
+
+        campo[r][c].setVisibile(true);
+
+        // clausola di chiusura
+
+        // caso base
+
+        // chiamata ricorsiva
     }
 }
