@@ -7,7 +7,7 @@ public class App {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // creazione campo di gioco
-        Campo gioco = new Campo(10, 15, 25, f.getContentPane());
+        Campo gioco = new Campo(10, 15, 50, f.getContentPane());
         // aggiunta del campo di gioco al frame
         f.getContentPane().add(gioco);
 

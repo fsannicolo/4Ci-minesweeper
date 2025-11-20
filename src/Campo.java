@@ -15,6 +15,8 @@ public class Campo extends JPanel {
     private int nBandiere = 0;
     private final int MINA = -1;
 
+    private boolean primoClick = true;
+
     public Campo(int righe, int colonne, int maxMine, Container content) {
 
         setPreferredSize(new Dimension(450,300));
@@ -40,6 +42,7 @@ public class Campo extends JPanel {
                     @Override
                     public void mouseReleased(MouseEvent e) {
                         
+                        // recupero le informazioni della cella cliccata
                         Cella cliccata = (Cella)e.getSource();
 
                         // button1: pulsante sx
@@ -47,8 +50,27 @@ public class Campo extends JPanel {
                         // button3: pulsante dx
                         switch (e.getButton()) {
                             case MouseEvent.BUTTON1:
+
+                                // verifico che il primo click sia sempre valido, e rigenero le mine
+                                while (primoClick && campo[cliccata.getR()][cliccata.getC()].getContenuto() == MINA) {  
+                                    generaMine();
+                                }
+
+                                // ricalcolo gli indizi
+                                if (primoClick) {
+                                    contaIndizi();
+
+                                    primoClick = false;
+                                }
+
                                 // scopre la singola cella (o l'area vuota)
                                 scopriCella(cliccata.getR(), cliccata.getC());
+
+                                // controllo se ho vinto
+                                if (checkVittoria()) {
+                                    JOptionPane.showMessageDialog(null, "HAI VINTO!");
+                                    return;
+                                }
                                 break;
 
                             case MouseEvent.BUTTON3:
@@ -85,9 +107,17 @@ public class Campo extends JPanel {
      */
     private void generaMine() {
 
-        Random rand = new Random();
+        // svuoto le vecchie mine
+        for (int r=0; r < campo.length; r++) {
+            for (int c=0; c < campo[0].length; c++) {
+                campo[r][c].setContenuto(0);
+            }
+        }
 
         int mineInserite = 0;
+
+        Random rand = new Random();
+
         while (mineInserite < mine) {
 
             // randomizzo coordinate della cella
@@ -142,12 +172,52 @@ public class Campo extends JPanel {
 
         if (campo[r][c].isBandiera()) return;
 
+        // caso base
         campo[r][c].setVisibile(true);
 
-        // clausola di chiusura
+        // controllo se ho perso
+        if (campo[r][c].getContenuto() == MINA) {
+            JOptionPane.showMessageDialog(null, "Game over!");
+            System.exit(0); 
+        }
 
-        // caso base
+        // clausola di chiusura
+        if (campo[r][c].getContenuto() > 0)
+            return;
 
         // chiamata ricorsiva
+        for (int riga = r-1; riga <= r+1; riga++) {
+            for (int col = c-1; col <= c+1; col++) {
+
+                // salto la cella attuale
+                if (riga == r && col == c) continue;
+
+                // controllo se le celle adiacenti sono coperte
+                try {
+                    if (!campo[riga][col].isScoperta())
+                        scopriCella(riga, col);      
+                }
+                catch (ArrayIndexOutOfBoundsException e) {/* salto la cella */}
+            }
+        }
+    }
+
+    private boolean checkVittoria() {
+
+        boolean win = true;
+
+        // label, identifica il ciclo più esterno
+        ciclo:
+        for (int r = 0; r < campo.length; r++) 
+            for (int c = 0; c < campo[0].length; c++) {
+                
+                if (campo[r][c].getContenuto() != MINA && !campo[r][c].isScoperta()) {
+
+                    win = false;
+                    break ciclo;
+                }
+            }
+            
+        return win;
     }
 }
